@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "muse-ui": "^3.0.2",
+    "muse-ui-loading": "^0.2.0",
+    "muse-ui-toast": "^0.3.0",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
     "vue-baidu-map": "^0.21.22",

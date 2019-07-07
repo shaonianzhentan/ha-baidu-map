@@ -14,7 +14,7 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="openBotttomSheet">选择监测设备</mu-button>
+          <mu-button @click="open = true">选择监测设备</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -96,84 +96,164 @@ export default {
     };
   },
   methods: {
-    ready(map) {
-      //   window.hassTV.hass
-      //     .then((obj: { zoneList: any, deviceList: any }) => {
-      //       // 获取区域位置
-      //       const zoneList: any = [];
-      //       const gpsPoint: any = [];
-      //       obj.zoneList.forEach((ele: any) => {
-      //         const attr = ele.entity.attributes;
-      //         zoneList.push({
-      //           title: ele.title,
-      //           location: {
-      //             lng: attr.longitude,
-      //             lat: attr.latitude
-      //           }
-      //         });
-      //         gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
-      //         this.center = {
-      //           lng: attr.longitude,
-      //           lat: attr.latitude
-      //         };
-      //       });
-      //       // 获取设备位置
-      //       const deviceList: any = [];
-      //       obj.deviceList.forEach((ele: any) => {
-      //         const attr = ele.entity.attributes;
-      //         deviceList.push({
-      //           title: ele.title,
-      //           location: {
-      //             lng: attr.longitude,
-      //             lat: attr.latitude
-      //           },
-      //           icon:
-      //             attr.picture ||
-      //             "https://www.home-assistant.io/images/favicon-192x192.png"
-      //         });
-      //         gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
-      //       });
-      //       // 进行坐标地址转换
-      //       const convert = new window.BMap.Convertor();
-      //       convert.translate(gpsPoint, 0, 5, (res: any) => {
-      //         if (res.status === 0) {
-      //           res.points.forEach((point: any, index: number) => {
-      //             // 如果大于区域设备，则跳到下一个
-      //             if (index >= zoneList.length) {
-      //               deviceList[index - zoneList.length].location = {
-      //                 lng: point.lng,
-      //                 lat: point.lat
-      //               };
-      //             } else {
-      //               zoneList[index].location = {
-      //                 lng: point.lng,
-      //                 lat: point.lat
-      //               };
-      //               this.center = { lng: point.lng, lat: point.lat };
-      //             }
-      //           });
-      //           this.zoneList = zoneList;
-      //           this.deviceList = deviceList;
-      //           // 合并全部设备
-      //           this.allList = [...deviceList, ...zoneList];
-      //           window.console.log(zoneList, deviceList);
-      //         } else {
-      //           this.$toast.error("坐标转换出现异常！");
-      //         }
-      //       });
-      //     })
-      //     .catch((ex: Error) => {
-      //       this.$toast.error(ex.message);
-      //     });
+    ready({ map, BMap }) {
+      window.hassMap.hass
+        .then(obj => {
+          // 获取区域位置
+          const zoneList = [];
+          const gpsPoint = [];
+          obj.zoneList.forEach(ele => {
+            const attr = ele.entity.attributes;
+            zoneList.push({
+              title: ele.title,
+              location: {
+                lng: attr.longitude,
+                lat: attr.latitude
+              }
+            });
+            gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
+            this.center = {
+              lng: attr.longitude,
+              lat: attr.latitude
+            };
+          });
+          // 获取设备位置
+          const deviceList = [];
+          obj.deviceList.forEach(ele => {
+            const attr = ele.entity.attributes;
+            deviceList.push({
+              title: ele.title,
+              location: {
+                lng: attr.longitude,
+                lat: attr.latitude
+              },
+              icon:
+                attr.picture ||
+                "https://www.home-assistant.io/images/favicon-192x192.png",
+              range: []
+            });
+            gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
+          });
+          // 进行坐标地址转换
+          const convert = new window.BMap.Convertor();
+          convert.translate(gpsPoint, 0, 5, res => {
+            if (res.status === 0) {
+              res.points.forEach((point, index) => {
+                // 如果大于区域设备，则跳到下一个
+                if (index >= zoneList.length) {
+                  deviceList[index - zoneList.length].location = {
+                    lng: point.lng,
+                    lat: point.lat
+                  };
+                } else {
+                  zoneList[index].location = {
+                    lng: point.lng,
+                    lat: point.lat
+                  };
+                  this.center = { lng: point.lng, lat: point.lat };
+                }
+              });
+              // 计算全部距离
+              for (let d of deviceList) {
+                for (let z of zoneList) {
+                  const pointD = new window.BMap.Point(
+                    d.location.lng,
+                    d.location.lat
+                  );
+                  const pointZ = new window.BMap.Point(
+                    z.location.lng,
+                    z.location.lat
+                  );
+                  d.range.push({
+                    device: d.title,
+                    zone: z.title,
+                    mi: map.getDistance(pointD, pointZ).toFixed(2)
+                  });
+                }
+              }
+
+              this.zoneList = zoneList;
+              this.deviceList = deviceList;
+              // 合并全部设备
+              this.allList = [...deviceList, ...zoneList];
+              // window.console.log(zoneList, deviceList);
+              setInterval(() => {
+                this.tick(map);
+              }, 5000);
+            } else {
+              this.$toast.error("坐标转换出现异常！");
+            }
+          });
+        })
+        .catch(ex => {
+          this.$toast.error(ex.message);
+        });
+    },
+    tick(map) {
+      window.hassMap.hass.then(obj => {
+        // 获取设备位置
+        const deviceList = [];
+        const gpsPoint = [];
+        obj.deviceList.forEach(ele => {
+          const attr = ele.entity.attributes;
+          deviceList.push({
+            title: ele.title,
+            location: {
+              lng: attr.longitude,
+              lat: attr.latitude
+            },
+            icon:
+              attr.picture ||
+              "https://www.home-assistant.io/images/favicon-192x192.png",
+            range: []
+          });
+          gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
+        });
+        // 进行坐标地址转换
+        const convert = new window.BMap.Convertor();
+        convert.translate(gpsPoint, 0, 5, res => {
+          if (res.status === 0) {
+            res.points.forEach((point, index) => {
+              deviceList[index].location = {
+                lng: point.lng,
+                lat: point.lat
+              };
+            });
+            // 计算全部距离
+            for (let d of deviceList) {
+              for (let z of this.zoneList) {
+                const pointD = new window.BMap.Point(
+                  d.location.lng,
+                  d.location.lat
+                );
+                const pointZ = new window.BMap.Point(
+                  z.location.lng,
+                  z.location.lat
+                );
+                d.range.push({
+                  device: d.title,
+                  zone: z.title,
+                  mi: map.getDistance(pointD, pointZ).toFixed(2)
+                });
+              }
+            }
+            this.deviceList = deviceList;
+            // 合并全部设备
+            this.allList = [...deviceList, ...this.zoneList];
+          } else {
+            this.$toast.error("坐标转换出现异常！");
+          }
+        });
+      });
     },
     selectDevice(item) {
-      //   this.center = { lng: 121.346405, lat: 31.131856 };
-      //   this.open = false;
-      //   const loading = this.$loading();
-      //   setTimeout(() => {
-      //     this.center = item.location;
-      //     loading.close();
-      //   }, 1000);
+      this.center = { lng: 121.346405, lat: 31.131856 };
+      this.open = false;
+      const loading = this.$loading();
+      setTimeout(() => {
+        this.center = item.location;
+        loading.close();
+      }, 1000);
     }
   }
 };
