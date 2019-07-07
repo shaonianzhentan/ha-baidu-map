@@ -6,7 +6,8 @@ let config = {
 }
 fs.writeFileSync('./dist/config.json', JSON.stringify(config))
 
-let content = fs.readFileSync('./template.js', 'utf-8')
+// let content = fs.readFileSync('./template.js', 'utf-8')
 
-fs.writeFileSync('./dist/baidu-map.js', content)
+// fs.writeFileSync('./dist/baidu-map.js', content)
 
+fs.copyFileSync('./template.js','./dist/baidu-map.js')
