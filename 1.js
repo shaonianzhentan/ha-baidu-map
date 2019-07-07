@@ -8,6 +8,5 @@ fs.writeFileSync('./dist/config.json', JSON.stringify(config))
 
 let content = fs.readFileSync('./template.js', 'utf-8')
 
-fs.writeFileSync('./dist/baidu-map.js',
-  content.replace('custom-localhost', `/community_plugin/lovelace-cloud-music/index.html?ver=${config.ver}`))
+fs.writeFileSync('./dist/baidu-map.js', content)
 
