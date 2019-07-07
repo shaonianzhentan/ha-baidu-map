@@ -14,7 +14,7 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="open = true">选择监测设备</mu-button>
+          <mu-button @click="openBotttomSheet">选择监测设备</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -48,9 +48,20 @@
         <my-overlay
           :position="item.location"
           animation="BMAP_ANIMATION_BOUNCE"
-          :key="index"
+          :key="'zone'+index"
         >
-          {{item.title}}
+          <b>{{item.title}}</b>
+          <br />
+          <ul class="list-info">
+            <li>
+              经度：
+              <span>{{item.location.lng}}</span>
+            </li>
+            <li>
+              纬度：
+              <span>{{item.location.lat}}</span>
+            </li>
+          </ul>
         </my-overlay>
       </template>
 
@@ -58,24 +69,43 @@
         <bm-circle
           :center="item.location"
           :radius="30"
-          stroke-color="orange"
+          stroke-color="blue"
           :stroke-opacity="0.5"
           :stroke-weight="2"
-          :key="index"
+          :key="'device-round'+index"
         ></bm-circle>
         <my-overlay
           :icon="{url: item.icon, size: {width: 50, height: 50}, opts: { imageSize: {width: 50, height: 50} }}"
           :position="item.location"
           animation="BMAP_ANIMATION_BOUNCE"
-          :key="index"
+          :key="'device'+index"
         >
-          {{item.title}}
+          <b>{{item.title}}</b>
+          <br />
+          <ul class="list-info">
+            <li>
+              经度：
+              <span>{{item.location.lng}}</span>
+            </li>
+            <li>
+              纬度：
+              <span>{{item.location.lat}}</span>
+            </li>
+            <li
+              v-for="(r,r_index) in item.range"
+              :key="r_index"
+            >
+              距离<b style="color:orange">{{r.zone}}</b>
+              <span>{{r.mi}}米</span>
+            </li>
+          </ul>
         </my-overlay>
       </template>
 
     </baidu-map>
   </div>
 </template>
+
 <script>
 import MyOverlay from "../components/MyOverlay.vue";
 export default {
