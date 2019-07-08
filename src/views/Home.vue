@@ -85,9 +85,7 @@
               <span>{{item.location.lat}}</span>
             </li>
             <li v-for="(r,r_index) in item.range" :key="r_index">
-              距离
-              <b style="color:orange">{{r.zone}}</b>
-              <span>{{r.mi}}米</span>
+              距离<b style="color:orange">{{r.zone}}</b><span>{{r.mi}}米</span>
             </li>
           </ul>
         </my-overlay>
