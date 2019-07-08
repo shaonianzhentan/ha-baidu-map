@@ -5,9 +5,12 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-import MuseUI from 'muse-ui';
+import { List, BottomSheet, Button, Icon } from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
-Vue.use(MuseUI);
+Vue.use(List);
+Vue.use(BottomSheet);
+Vue.use(Button);
+Vue.use(Icon);
 
 import Loading from 'muse-ui-loading';
 import 'muse-ui-loading/dist/muse-ui-loading.css';
