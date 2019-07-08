@@ -14,7 +14,7 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="openBotttomSheet">选择监测设备</mu-button>
+          <mu-button @click="open = true">选择监测设备</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -25,10 +25,7 @@
                 @click="selectDevice(item)"
               >
                 <mu-list-item-action>
-                  <mu-icon
-                    value="grade"
-                    color="orange"
-                  ></mu-icon>
+                  <mu-icon value="grade" color="orange"></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>{{item.title}}</mu-list-item-title>
               </mu-list-item>
@@ -45,11 +42,7 @@
           :stroke-weight="2"
           :key="index"
         ></bm-circle>
-        <my-overlay
-          :position="item.location"
-          animation="BMAP_ANIMATION_BOUNCE"
-          :key="'zone'+index"
-        >
+        <my-overlay :position="item.location" animation="BMAP_ANIMATION_BOUNCE" :key="'zone'+index">
           <b>{{item.title}}</b>
           <br />
           <ul class="list-info">
@@ -91,17 +84,14 @@
               纬度：
               <span>{{item.location.lat}}</span>
             </li>
-            <li
-              v-for="(r,r_index) in item.range"
-              :key="r_index"
-            >
-              距离<b style="color:orange">{{r.zone}}</b>
+            <li v-for="(r,r_index) in item.range" :key="r_index">
+              距离
+              <b style="color:orange">{{r.zone}}</b>
               <span>{{r.mi}}米</span>
             </li>
           </ul>
         </my-overlay>
       </template>
-
     </baidu-map>
   </div>
 </template>
@@ -219,6 +209,19 @@ export default {
           this.$toast.error(ex.message);
         });
     },
+    //获取图片
+    getTextImage(str) {
+      if (!str) return "https://www.home-assistant.io/images/favicon-192x192.png"
+      var canvas = document.createElement("canvas");
+      canvas.width = 50;
+      canvas.height = 50;
+      var ctx = canvas.getContext("2d");
+      ctx.font = "20px Georgia";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(str[0], canvas.width / 2, canvas.width / 2);
+      return canvas.toDataURL("image/png");
+    },
     tick(map) {
       window.hassMap.hass.then(obj => {
         // 获取设备位置
@@ -226,15 +229,14 @@ export default {
         const gpsPoint = [];
         obj.deviceList.forEach(ele => {
           const attr = ele.entity.attributes;
+          let picture = this.getTextImage()
           deviceList.push({
             title: ele.title,
             location: {
               lng: attr.longitude,
               lat: attr.latitude
             },
-            icon:
-              attr.picture ||
-              "https://www.home-assistant.io/images/favicon-192x192.png",
+            icon: attr.picture || picture,
             range: []
           });
           gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
