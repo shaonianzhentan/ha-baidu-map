@@ -141,6 +141,7 @@ export default {
           const deviceList = [];
           obj.deviceList.forEach(ele => {
             const attr = ele.entity.attributes;
+            let picture = this.getTextImage(ele.title)
             deviceList.push({
               title: ele.title,
               location: {
@@ -148,8 +149,7 @@ export default {
                 lat: attr.latitude
               },
               icon:
-                attr.picture ||
-                "https://www.home-assistant.io/images/favicon-192x192.png",
+                attr.picture || picture,
               range: []
             });
             gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
@@ -229,7 +229,7 @@ export default {
         const gpsPoint = [];
         obj.deviceList.forEach(ele => {
           const attr = ele.entity.attributes;
-          let picture = this.getTextImage()
+          let picture = this.getTextImage(ele.title)
           deviceList.push({
             title: ele.title,
             location: {
