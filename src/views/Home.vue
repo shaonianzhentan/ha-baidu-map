@@ -216,10 +216,14 @@ export default {
       canvas.width = 50;
       canvas.height = 50;
       var ctx = canvas.getContext("2d");
-      ctx.font = "20px Georgia";
+      ctx.rect(0, 0, 50, 50);
+      ctx.fillStyle = "white";
+      ctx.fill();
+      ctx.save();
+      ctx.font = "30px Georgia";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(str[0], canvas.width / 2, canvas.width / 2);
+      ctx.strokeText(str[0], canvas.width / 2, canvas.width / 2);
       return canvas.toDataURL("image/png");
     },
     tick(map) {
