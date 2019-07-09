@@ -5,14 +5,9 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-import { List, BottomSheet, Button, Icon,SubHeader,Snackbar } from 'muse-ui';
+import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
-Vue.use(List);
-Vue.use(BottomSheet);
-Vue.use(Button);
-Vue.use(Icon);
-Vue.use(SubHeader);
-Vue.use(Snackbar);
+Vue.use(MuseUI);
 
 import Loading from 'muse-ui-loading';
 import 'muse-ui-loading/dist/muse-ui-loading.css';
@@ -70,6 +65,36 @@ window.hassMap = {
     });
   },
 };
+
+//动态注册组件
+Vue.prototype.registeredComponent = async function (component, propsData = {}) {
+  let _constructor = null
+  if (typeof component === 'string') {
+      let com = null
+      //任务队列
+      if (component === 'GPSLogger') com = await import('@/components/GPSLogger')
+      if (com !== null) {
+          _constructor = Vue.extend(com.default)
+      }
+      else {
+          console.error('组件未定义')
+          return
+      }
+  } else {
+      _constructor = Vue.extend(component)
+  }
+
+  return new Promise((resolve, reject) => {
+      let instance = new _constructor({
+          router,
+          propsData
+      }).$mount(document.createElement('div'))
+
+      instance.$on('done', data => resolve(data))
+  })
+
+}
+
 
 new Vue({
   router,

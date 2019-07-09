@@ -14,7 +14,7 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="open = true">选择监测设备</mu-button>
+          <mu-button @click="open = true">更多功能</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -25,9 +25,24 @@
                 @click="selectDevice(item)"
               >
                 <mu-list-item-action>
-                  <mu-icon value="grade" color="orange"></mu-icon>
+                  <mu-icon value="location_on" color="blue"></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>{{item.title}}</mu-list-item-title>
+              </mu-list-item>
+            </mu-list>
+            <mu-list>
+              <mu-sub-header>设置</mu-sub-header>
+              <mu-list-item button @click="gpsloggerClick">
+                <mu-list-item-action>
+                  <mu-icon value="settings" color="green"></mu-icon>
+                </mu-list-item-action>
+                <mu-list-item-title>GPSLogger配置</mu-list-item-title>
+              </mu-list-item>
+              <mu-list-item button @click="logInfoClick">
+                <mu-list-item-action>
+                  <mu-icon value="settings" color="green"></mu-icon>
+                </mu-list-item-action>
+                <mu-list-item-title>GPSLogger定位日志查看</mu-list-item-title>
               </mu-list-item>
             </mu-list>
           </mu-bottom-sheet>
@@ -37,12 +52,16 @@
         <bm-circle
           :center="item.location"
           :radius="100"
-          stroke-color="orange"
+          stroke-color="#0f67b1"
           :stroke-opacity="0.5"
           :stroke-weight="2"
           :key="index"
         ></bm-circle>
-        <my-overlay :position="item.location" animation="BMAP_ANIMATION_BOUNCE" :key="'zone'+index">
+        <my-overlay
+          :icon="{url: item.icon, size: {width: 50, height: 50}, opts: { imageSize: {width: 50, height: 50} }}"
+          :position="item.location"
+          :key="'zone'+index"
+        >
           <b>{{item.title}}</b>
           <br />
           <ul class="list-info">
@@ -85,33 +104,70 @@
               <span>{{item.location.lat}}</span>
             </li>
             <li v-for="(r,r_index) in item.range" :key="r_index">
-              距离<b style="color:orange">{{r.zone}}</b><span>{{r.mi}}米</span>
+              距离
+              <b style="color:orange">{{r.zone}}</b>
+              <span>{{r.mi}}米</span>
             </li>
           </ul>
         </my-overlay>
       </template>
+      <!--定位按钮-->
+      <bm-geolocation
+        anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
+        @locationSuccess="locationSuccess"
+        @locationError="locationError"
+        :showAddressBar="true"
+        :autoLocation="true"
+      ></bm-geolocation>
     </baidu-map>
+    <LogInfo ref="LogInfo" />
   </div>
 </template>
 
 <script>
 import MyOverlay from "../components/MyOverlay.vue";
+import LogInfo from "../components/LogInfo.vue";
+
 export default {
   components: {
-    MyOverlay
+    MyOverlay,
+    LogInfo
   },
   data() {
     return {
       open: false,
       zoom: 18,
-      zoneList: [],
-      deviceList: [],
+      zoneList: [
+        {
+          title: "家测试",
+          location: {
+            lng: 121.34607502288814,
+            lat: 31.24192393278093
+          },
+          icon: './img/home.png',
+          range: []
+        }
+      ],
+      deviceList: [
+        {
+          title: "我测试",
+          location: {
+            lng: 121.34607502288814,
+            lat: 31.23192393278093
+          },
+          icon: './img/my.png',
+          range: []
+        }
+      ],
       allList: [],
       center: {
         lng: 121.848405,
         lat: 31.739856
       }
     };
+  },
+  created() {
+    this.allList = [...this.deviceList, ...this.zoneList];
   },
   methods: {
     ready({ map, BMap }) {
@@ -288,7 +344,60 @@ export default {
         this.center = item.location;
         loading.close();
       }, 1000);
+    },
+    gpsloggerClick() {
+      this.open = false;
+      this.registeredComponent('GPSLogger').then(() => {
+        this.$toast.success("配置成功，点击右下角持续定位");
+      })
+    },
+    logInfoClick(){
+      this.$refs['LogInfo'].show()
+    },
+    //持续定位
+    timerLocation(lat, lng) {
+      try {
+        let obj = JSON.parse(localStorage['map-gpslogger'])
+        fetch(obj.webhook, {
+          method: 'post',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `latitude=${lat}&longitude=${lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
+          mode: 'no-cors',
+        }).then(res => res.text()).then(res => {
+          this.$refs['LogInfo'].add(`发送定位信息成功`)
+          console.log('发送定位信息成功')
+        }).catch(ex => {
+          this.$toast.error(`定位信息发送错误`);
+        })
+      } catch{                
+        return;
+      }
+
+      let _this = this
+      var geolocation = new BMap.Geolocation();
+      geolocation.getCurrentPosition(function (r) {
+        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+          //console.log(r)
+          let point = r.point
+          setTimeout(() => {
+            _this.timerLocation(point.lat, point.lng)
+          }, 3000)
+        } else {
+          _this.$toast.error(`定位失败，错误码：${this.getStatus()}`);
+        }
+      });
+    },
+    locationSuccess({ point, AddressComponent, marker }) {
+      this.$toast.success("开启持续定位中...");
+      this.timerLocation(point.lat, point.lng)
+      console.log(point)
+    },
+    locationError({ StatusCode }) {
+      this.$toast.error(`定位失败，错误码：${StatusCode}`);
     }
+
   }
 };
 </script>

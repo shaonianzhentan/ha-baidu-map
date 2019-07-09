@@ -1,8 +1,8 @@
 <template>
-<bm-marker :dragging="false" v-bind="$attrs" @click="infoWindowOpen">
-      <bm-info-window :show="show" @close="infoWindowClose" @open="infoWindowOpen">
-        <slot></slot>
-      </bm-info-window>
+  <bm-marker :dragging="false" v-bind="$attrs" @click="infoWindowOpen">
+    <bm-info-window :show="show" @close="infoWindowClose" @open="infoWindowOpen">
+      <slot></slot>
+    </bm-info-window>
   </bm-marker>
 </template>
 
@@ -27,9 +27,10 @@ export default {
 <style lang="less">
 .BMap_Marker {
   img{
-    &:not([src*='https://api.map.baidu.com']){
+    &:not([src*='./img/home.png']){
       width:100%;
       border-radius: 50%;
+      background:white;
       border:1px solid #03a9f4!important;
     }    
   }
