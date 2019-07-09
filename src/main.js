@@ -23,6 +23,8 @@ Vue.use(BaiduMap, {
   ak: 'hNT4WeW0AGvh2GuzuO92OfM6hCW25HhX',
 });
 
+window.noSleep = new NoSleep();
+
 window.hassMap = {
   get hass() {
     return new Promise(async (resolve, reject) => {

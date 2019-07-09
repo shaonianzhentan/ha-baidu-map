@@ -258,10 +258,13 @@ export default {
               this.$toast.error("坐标转换出现异常！");
             }
           });
+
+
+          
         })
         .catch(ex => {
           this.$toast.error(ex.message);
-        });
+        });          
     },
     //获取图片
     getTextImage(str) {
@@ -391,6 +394,7 @@ export default {
       });
     },
     locationSuccess({ point, AddressComponent, marker }) {
+      window.noSleep.enable();
       this.$toast.success("开启持续定位中...打开日志查看");
       this.timerLocation(point.lat, point.lng)
       console.log(point)
