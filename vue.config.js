@@ -5,6 +5,6 @@ function resolve (dir) {
 }
 
 module.exports = {
-  publicPath: '',
+  publicPath: '/dev/',
   productionSourceMap: process.env.NODE_ENV === 'production' ? false : true
 }
