@@ -183,7 +183,8 @@ export default {
               location: {
                 lng: attr.longitude,
                 lat: attr.latitude
-              }
+              },
+              icon: './img/home.png',
             });
             gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
             this.center = {
@@ -202,8 +203,7 @@ export default {
                 lng: attr.longitude,
                 lat: attr.latitude
               },
-              icon:
-                attr.picture || picture,
+              icon: attr.picture || picture,
               range: []
             });
             gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
@@ -277,6 +277,7 @@ export default {
       ctx.font = "30px Georgia";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
+      ctx.strokeStyle="#0000ff";
       ctx.strokeText(str[0], canvas.width / 2, canvas.width / 2);
       return canvas.toDataURL("image/png");
     },
@@ -390,7 +391,7 @@ export default {
       });
     },
     locationSuccess({ point, AddressComponent, marker }) {
-      this.$toast.success("开启持续定位中...");
+      this.$toast.success("开启持续定位中...打开日志查看");
       this.timerLocation(point.lat, point.lng)
       console.log(point)
     },
