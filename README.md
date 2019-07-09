@@ -41,6 +41,15 @@ panel_custom:
 
 # 请一定要在HomeAssistant里使用，不然没啥用
 
+## 界面欣赏
+
+#### 选择设备
+![选择设备](https://raw.githubusercontent.com/shaonianzhentan/lovelace-baidu-map/master/screenshots/1.png)
+
+#### 设置定位Webhook
+![设置定位Webhook](https://raw.githubusercontent.com/shaonianzhentan/lovelace-baidu-map/master/screenshots/2.png)
+
+
 ## 功能
 
 - 查看位置
