@@ -163,11 +163,6 @@ export default {
       center: {
         lng: 121.848405,
         lat: 31.739856
-      },
-      //百度与GPS相差点
-      gpsOffset: {
-        lng: 0,
-        lat: 0
       }
     };
   },
@@ -217,12 +212,6 @@ export default {
           const convert = new window.BMap.Convertor();
           convert.translate(gpsPoint, 0, 5, res => {
             if (res.status === 0) {
-              //计算GPS与百度的偏差值 
-              if (this.gpsOffset.x === 0) {
-                this.gpsOffset.lng = res.points[0].lng - zoneList[0].location.lng
-                this.gpsOffset.lat = res.points[0].lat - zoneList[0].location.lat
-              }
-
               res.points.forEach((point, index) => {
                 // 如果大于区域设备，则跳到下一个
                 if (index >= zoneList.length) {
@@ -378,7 +367,7 @@ export default {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: `latitude=${lat - this.gpsOffset.lat}&longitude=${lng - this.gpsOffset.lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
+          body: `latitude=${lat}&longitude=${lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
           mode: 'no-cors',
         }).then(res => res.text()).then(res => {
           this.$refs['LogInfo'].add(`发送定位信息成功`)
@@ -386,19 +375,24 @@ export default {
         }).catch(ex => {
           this.$toast.error(`定位信息发送错误`);
         }).finally(() => {
-          let _this = this
-          var geolocation = new BMap.Geolocation();
-          geolocation.getCurrentPosition(function (r) {
-            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-              //console.log(r)
-              let point = r.point
-              setTimeout(() => {
-                _this.timerLocation(point.lat, point.lng)
-              }, 3000)
-            } else {
-              _this.$toast.error(`定位失败，错误码：${this.getStatus()}`);
-            }
-          });
+          // let _this = this
+          // var geolocation = new BMap.Geolocation();
+          // geolocation.getCurrentPosition(function (r) {
+          //   if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+          //     //console.log(r)
+          //     let point = r.point
+          //     setTimeout(() => {
+          //       _this.timerLocation(point.lat, point.lng)
+          //     }, 3000)
+          //   } else {
+          //     _this.$toast.error(`定位失败，错误码：${this.getStatus()}`);
+          //   }
+          // });
+          navigator.geolocation.getCurrentPosition((position) => {
+            this.timerLocation(position.coords.latitude, position.coords.longitude)
+          }, (err) => {
+            this.$refs['LogInfo'].add(`定位错误：${err.code}`)
+          })
         })
       } catch{
 
@@ -407,9 +401,13 @@ export default {
     },
     locationSuccess({ point, AddressComponent, marker }) {
       window.noSleep.enable();
-      this.$toast.success("开启持续定位中...打开日志查看");
-      this.timerLocation(point.lat, point.lng)
       console.log(point)
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.$toast.success("开启持续定位中...打开日志查看");
+        this.timerLocation(position.coords.latitude, position.coords.longitude)
+      }, (err) => {
+        console.log(err)
+      })
     },
     locationError({ StatusCode }) {
       this.$toast.error(`定位失败，错误码：${StatusCode}`);
