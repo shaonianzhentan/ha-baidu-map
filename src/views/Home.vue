@@ -14,7 +14,7 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="open = true">更多功能</mu-button>
+          <mu-button @click="open = true" small>更多功能</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -43,6 +43,12 @@
                   <mu-icon value="settings" color="green"></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>GPSLogger定位日志查看</mu-list-item-title>
+              </mu-list-item>
+              <mu-list-item button @click="homeClick">
+                <mu-list-item-action>
+                  <mu-icon value="home" color="red"></mu-icon>
+                </mu-list-item-action>
+                <mu-list-item-title>回到首页</mu-list-item-title>
               </mu-list-item>
             </mu-list>
           </mu-bottom-sheet>
@@ -164,7 +170,8 @@ export default {
         lng: 121.848405,
         lat: 31.739856
       },
-      isStartLocation: false
+      isStartLocation: false,
+      isSendLocation: false
     };
   },
   created() {
@@ -357,12 +364,16 @@ export default {
       })
     },
     logInfoClick() {
+      this.open = false;
       this.$refs['LogInfo'].show()
+    },
+    homeClick() {
+      top.location.href = '/'
     },
     //持续定位
     async timerLocation({ latitude, longitude, accuracy, speed, altitude }) {
-      if (this.timerLocation.prototype.isSending) return;
-      this.timerLocation.prototype.isSending = true
+      if (this.isSendLocation) return;
+      this.isSendLocation = true
       //获取电池信息
       let battery = 100
       try {
@@ -390,13 +401,12 @@ export default {
         }).finally(() => {
           //5秒重新发送
           setTimeout(() => {
-            this.timerLocation.prototype.isSending = false
+            this.isSendLocation = false
           }, 5000)
         })
       } catch{
 
       }
-
     },
     locationSuccess({ point, AddressComponent, marker }) {
       if (this.isStartLocation) return;
