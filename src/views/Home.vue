@@ -360,7 +360,7 @@ export default {
       this.$refs['LogInfo'].show()
     },
     //持续定位
-    async timerLocation(lat, lng) {
+    async timerLocation({ latitude, longitude, accuracy, speed, altitude }) {
       //获取电池信息
       let battery = 100
       try {
@@ -377,10 +377,12 @@ export default {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: `latitude=${lat}&longitude=${lng}&device=${obj.device}&accuracy=0&battery=${battery}&speed=0&direction=0&altitude=0&provider=0&activity=0`,
+          body: `latitude=${latitude}&longitude=${longitude}&device=${obj.device}&accuracy=${accuracy || ''
+            }&battery=${battery}&speed=${speed || ''
+            }&direction=0&altitude=0&provider=0&activity=0`,
           mode: 'no-cors',
         }).then(res => res.text()).then(res => {
-          this.$refs['LogInfo'].add(`经度：${lng} \n 纬度：${lat}`)
+          this.$refs['LogInfo'].add(`经度：${longitude} \n 纬度：${latitude}`)
         }).catch(ex => {
           this.$toast.error(`定位信息发送错误`);
         }).finally(() => {
@@ -396,12 +398,7 @@ export default {
           //   } else {
           //     _this.$toast.error(`定位失败，错误码：${this.getStatus()}`);
           //   }
-          // });
-          navigator.geolocation.getCurrentPosition((position) => {
-            this.timerLocation(position.coords.latitude, position.coords.longitude)
-          }, (err) => {
-            this.$refs['LogInfo'].add(`定位错误：${err.code}`)
-          })
+          // });    
         })
       } catch{
 
@@ -413,12 +410,17 @@ export default {
       this.isStartLocation = true;
       window.noSleep.enable();
       console.log(point)
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.$toast.success("开启持续定位中...打开日志查看");
-        this.timerLocation(position.coords.latitude, position.coords.longitude)
+      this.$toast.success("开启持续定位中...打开日志查看");
+      //开始定位（监听位置）
+      navigator.geolocation.watchPosition(({ coords }) => {
+        this.timerLocation(coords)
       }, (err) => {
         this.$refs['LogInfo'].add(`定位错误：${err.code}`)
-      })
+      }, {
+          enableHighAccuracy: true,
+          maximumAge: 1000 * 60,
+          timeout: 15000
+        })
     },
     locationError({ StatusCode }) {
       this.$toast.error(`定位失败，错误码：${StatusCode}`);
