@@ -23,7 +23,7 @@ export default {
       this.openScroll = true;
     },
     add(msg) {
-      this.log += `${new Date().toLocaleString()}-${msg} \n`
+      this.log = `${new Date().toLocaleString()}-${msg} \n ${this.log}`
     },
     close() {
       this.openScroll = false;
