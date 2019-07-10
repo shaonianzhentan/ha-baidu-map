@@ -361,11 +361,13 @@ export default {
     },
     //持续定位
     async timerLocation({ latitude, longitude, accuracy, speed, altitude }) {
+      if (this.timerLocation.prototype.isSending) return;
+      this.timerLocation.prototype.isSending = true
       //获取电池信息
       let battery = 100
       try {
         let b = await navigator.getBattery().catch(() => { })
-        battery = b.level
+        battery = b.level * 100
       } catch{
 
       }
@@ -386,19 +388,10 @@ export default {
         }).catch(ex => {
           this.$toast.error(`定位信息发送错误`);
         }).finally(() => {
-          // let _this = this
-          // var geolocation = new BMap.Geolocation();
-          // geolocation.getCurrentPosition(function (r) {
-          //   if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-          //     //console.log(r)
-          //     let point = r.point
-          //     setTimeout(() => {
-          //       _this.timerLocation(point.lat, point.lng)
-          //     }, 3000)
-          //   } else {
-          //     _this.$toast.error(`定位失败，错误码：${this.getStatus()}`);
-          //   }
-          // });    
+          //5秒重新发送
+          setTimeout(() => {
+            this.timerLocation.prototype.isSending = false
+          }, 5000)
         })
       } catch{
 
@@ -418,7 +411,7 @@ export default {
         this.$refs['LogInfo'].add(`定位错误：${err.code}`)
       }, {
           enableHighAccuracy: true,
-          maximumAge: 1000 * 60,
+          maximumAge: 60000,
           timeout: 15000
         })
     },
