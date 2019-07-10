@@ -163,7 +163,8 @@ export default {
       center: {
         lng: 121.848405,
         lat: 31.739856
-      }
+      },
+      isStartLocation: false
     };
   },
   created() {
@@ -359,7 +360,16 @@ export default {
       this.$refs['LogInfo'].show()
     },
     //持续定位
-    timerLocation(lat, lng) {
+    async timerLocation(lat, lng) {
+      //获取电池信息
+      let battery = 100
+      try {
+        let b = await navigator.getBattery().catch(() => { })
+        battery = b.level
+      } catch{
+
+      }
+
       try {
         let obj = JSON.parse(localStorage['map-gpslogger'])
         fetch(obj.webhook, {
@@ -367,11 +377,10 @@ export default {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: `latitude=${lat}&longitude=${lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
+          body: `latitude=${lat}&longitude=${lng}&device=${obj.device}&accuracy=0&battery=${battery}&speed=0&direction=0&altitude=0&provider=0&activity=0`,
           mode: 'no-cors',
         }).then(res => res.text()).then(res => {
-          this.$refs['LogInfo'].add(`发送定位信息成功`)
-          console.log('发送定位信息成功')
+          this.$refs['LogInfo'].add(`经度：${lng} \n 纬度：${lat}`)
         }).catch(ex => {
           this.$toast.error(`定位信息发送错误`);
         }).finally(() => {
@@ -400,13 +409,15 @@ export default {
 
     },
     locationSuccess({ point, AddressComponent, marker }) {
+      if (this.isStartLocation) return;
+      this.isStartLocation = true;
       window.noSleep.enable();
       console.log(point)
       navigator.geolocation.getCurrentPosition((position) => {
         this.$toast.success("开启持续定位中...打开日志查看");
         this.timerLocation(position.coords.latitude, position.coords.longitude)
       }, (err) => {
-        console.log(err)
+        this.$refs['LogInfo'].add(`定位错误：${err.code}`)
       })
     },
     locationError({ StatusCode }) {
