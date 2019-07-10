@@ -378,7 +378,7 @@ export default {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: `latitude=${lat - this.gpsloggerClick.lat}&longitude=${lng - this.gpsloggerClick.lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
+          body: `latitude=${lat - this.gpsOffset.lat}&longitude=${lng - this.gpsOffset.lng}&device=${obj.device}&accuracy=0&battery=100&speed=0&direction=0&altitude=0&provider=0&activity=0`,
           mode: 'no-cors',
         }).then(res => res.text()).then(res => {
           this.$refs['LogInfo'].add(`发送定位信息成功`)
