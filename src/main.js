@@ -5,6 +5,16 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
+//版本管理(如果链接中不包含这个，则跳到指定的版本)
+fetch(`config.json?r=${Date.now()}`)
+  .then(res => res.json())
+  .then(res => {
+    const link = `${location.pathname}?ver=${res.ver}${location.hash}`;
+    if (location.href.indexOf(res.ver) < 0) {
+      location.href = link
+    }
+  })
+
 import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 Vue.use(MuseUI);
@@ -72,27 +82,27 @@ window.hassMap = {
 Vue.prototype.registeredComponent = async function (component, propsData = {}) {
   let _constructor = null
   if (typeof component === 'string') {
-      let com = null
-      //任务队列
-      if (component === 'GPSLogger') com = await import('@/components/GPSLogger')
-      if (com !== null) {
-          _constructor = Vue.extend(com.default)
-      }
-      else {
-          console.error('组件未定义')
-          return
-      }
+    let com = null
+    //任务队列
+    if (component === 'GPSLogger') com = await import('@/components/GPSLogger')
+    if (com !== null) {
+      _constructor = Vue.extend(com.default)
+    }
+    else {
+      console.error('组件未定义')
+      return
+    }
   } else {
-      _constructor = Vue.extend(component)
+    _constructor = Vue.extend(component)
   }
 
   return new Promise((resolve, reject) => {
-      let instance = new _constructor({
-          router,
-          propsData
-      }).$mount(document.createElement('div'))
+    let instance = new _constructor({
+      router,
+      propsData
+    }).$mount(document.createElement('div'))
 
-      instance.$on('done', data => resolve(data))
+    instance.$on('done', data => resolve(data))
   })
 
 }
