@@ -1,7 +1,7 @@
   
 {
-  "domain": "ha-cloud-map",
-  "name": "ha-cloud-map",
+  "domain": "ha-baidu-map",
+  "name": "ha-baidu-map",
   "documentation": "https://github.com/shaonianzhentan/ha-baidu-map",
   "requirements": [
   ],
