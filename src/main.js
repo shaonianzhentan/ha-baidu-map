@@ -23,6 +23,8 @@ Vue.use(BaiduMap, {
   ak: 'hNT4WeW0AGvh2GuzuO92OfM6hCW25HhX',
 });
 
+top.document.body.style.overflow = 'hidden'
+
 window.noSleep = new NoSleep();
 
 window.hassMap = {

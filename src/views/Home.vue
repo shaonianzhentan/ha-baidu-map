@@ -36,7 +36,7 @@
                 <mu-list-item-title>{{item.title}}</mu-list-item-title>
               </mu-list-item>
             </mu-list>
-            <mu-list>
+            <!-- <mu-list>
               <mu-sub-header>设置</mu-sub-header>
               <mu-list-item
                 button
@@ -62,7 +62,7 @@
                 </mu-list-item-action>
                 <mu-list-item-title>GPSLogger定位日志查看</mu-list-item-title>
               </mu-list-item>
-            </mu-list>
+            </mu-list> -->
           </mu-bottom-sheet>
         </div>
       </bm-control>
@@ -133,13 +133,13 @@
         </my-overlay>
       </template>
       <!--定位按钮-->
-      <bm-geolocation
+      <!-- <bm-geolocation
         anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
         @locationSuccess="locationSuccess"
         @locationError="locationError"
         :showAddressBar="true"
         :autoLocation="true"
-      ></bm-geolocation>
+      ></bm-geolocation> -->
     </baidu-map>
     <LogInfo ref="LogInfo" />
   </div>
