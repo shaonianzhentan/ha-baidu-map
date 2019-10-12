@@ -1,0 +1,10 @@
+  
+{
+  "domain": "ha-cloud-map",
+  "name": "ha-cloud-map",
+  "documentation": "https://github.com/shaonianzhentan/ha-baidu-map",
+  "requirements": [
+  ],
+  "dependencies": [],
+  "codeowners": []
+}
