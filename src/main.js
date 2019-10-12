@@ -5,16 +5,6 @@ import './registerServiceWorker'
 
 Vue.config.productionTip = false
 
-//版本管理(如果链接中不包含这个，则跳到指定的版本)
-fetch(`config.json?r=${Date.now()}`)
-  .then(res => res.json())
-  .then(res => {
-    const link = `${location.pathname}?ver=${res.ver}${location.hash}`;
-    if (location.href.indexOf(res.ver) < 0) {
-      location.href = link
-    }
-  })
-
 import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 Vue.use(MuseUI);

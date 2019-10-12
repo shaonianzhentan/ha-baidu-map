@@ -433,7 +433,7 @@ export default {
           this.timerLocation(coords);
         },
         err => {
-          this.$refs["LogInfo"].add(`定位错误：${err.code}`);
+          this.$refs["LogInfo"].add(`定位错误[${err.code}]：${err.message}`);
         },
         {
           enableHighAccuracy: true,
