@@ -6,36 +6,21 @@
 
 ## 如何使用
 
-> 前端配置
+> 安装
 
 1.（建议）使用[HACS安装](https://github.com/custom-components/hacs)
 
-在HACS里输入：https://github.com/shaonianzhentan/lovelace-baidu-map 即可安装成功
-
-安装成功后的访问路径：/community_plugin/lovelace-baidu-map/index.html
+在HACS里输入：https://github.com/shaonianzhentan/ha-baidu-map 即可安装成功（类型选择Integration）
 
 2.自定义安装
 
-将本项目的dist复制到HASS的www下的文件夹
+将本项目custom_components里的内容，放到HASS的custom_components文件夹中
 
-然后通过/local/dist/index.html 访问（这里的dist可以自行修改）
+> 后台插件配置
 
-3.左侧栏配置
-
-在configuration.yaml中配置以下内容，会在左侧栏显示
+然后在configuration.yaml中配置以下内容
 ```
-panel_custom:
-  # 请勿修改name的值
-  - name: react-panel
-    sidebar_title: 地图
-    sidebar_icon: mdi:map-marker
-    url_path: lovelace-baidu-map
-    embed_iframe: true
-    # 只能使用通过HACS安装的路径
-    js_url: /community_plugin/lovelace-baidu-map/baidu-map.js
-    # 配置URL路径
-    config:
-      url: /community_plugin/lovelace-baidu-map/index.html
+ha-baidu-map:
 
 ```
 
@@ -56,7 +41,10 @@ panel_custom:
 
 ## 更新说明
 
-### V0.1.1（2019.07.010）
+### V1.0.0（2019.10.12）
+- 全新配置，安装更简单
+
+### V0.1.1（2019.07.10）
 - 在上报位置信息时，带上了手机电量信息
 - 修复了百度定位不准的问题，换成了GPS定位
 

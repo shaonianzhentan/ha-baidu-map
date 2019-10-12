@@ -14,7 +14,10 @@
       ></bm-map-type>
       <bm-control>
         <div style="padding:10px;margin-top:30px;">
-          <mu-button @click="open = true" small>更多功能</mu-button>
+          <mu-button
+            @click="open = true"
+            small
+          >更多功能</mu-button>
           <mu-bottom-sheet :open.sync="open">
             <mu-list>
               <mu-sub-header>选择监测设备</mu-sub-header>
@@ -25,30 +28,39 @@
                 @click="selectDevice(item)"
               >
                 <mu-list-item-action>
-                  <mu-icon value="location_on" color="blue"></mu-icon>
+                  <mu-icon
+                    value="location_on"
+                    color="blue"
+                  ></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>{{item.title}}</mu-list-item-title>
               </mu-list-item>
             </mu-list>
             <mu-list>
               <mu-sub-header>设置</mu-sub-header>
-              <mu-list-item button @click="gpsloggerClick">
+              <mu-list-item
+                button
+                @click="gpsloggerClick"
+              >
                 <mu-list-item-action>
-                  <mu-icon value="settings" color="green"></mu-icon>
+                  <mu-icon
+                    value="settings"
+                    color="green"
+                  ></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>GPSLogger配置</mu-list-item-title>
               </mu-list-item>
-              <mu-list-item button @click="logInfoClick">
+              <mu-list-item
+                button
+                @click="logInfoClick"
+              >
                 <mu-list-item-action>
-                  <mu-icon value="settings" color="green"></mu-icon>
+                  <mu-icon
+                    value="settings"
+                    color="green"
+                  ></mu-icon>
                 </mu-list-item-action>
                 <mu-list-item-title>GPSLogger定位日志查看</mu-list-item-title>
-              </mu-list-item>
-              <mu-list-item button @click="homeClick">
-                <mu-list-item-action>
-                  <mu-icon value="home" color="red"></mu-icon>
-                </mu-list-item-action>
-                <mu-list-item-title>回到首页</mu-list-item-title>
               </mu-list-item>
             </mu-list>
           </mu-bottom-sheet>
@@ -109,7 +121,10 @@
               纬度：
               <span>{{item.location.lat}}</span>
             </li>
-            <li v-for="(r,r_index) in item.range" :key="r_index">
+            <li
+              v-for="(r,r_index) in item.range"
+              :key="r_index"
+            >
               距离
               <b style="color:orange">{{r.zone}}</b>
               <span>{{r.mi}}米</span>
@@ -144,26 +159,26 @@ export default {
       open: false,
       zoom: 18,
       zoneList: [
-        {
-          title: "家测试",
-          location: {
-            lng: 121.34607502288814,
-            lat: 31.24192393278093
-          },
-          icon: './img/home.png',
-          range: []
-        }
+        // {
+        //   title: "家测试",
+        //   location: {
+        //     lng: 121.34607502288814,
+        //     lat: 31.24192393278093
+        //   },
+        //   icon: './img/home.png',
+        //   range: []
+        // }
       ],
       deviceList: [
-        {
-          title: "我测试",
-          location: {
-            lng: 121.34607502288814,
-            lat: 31.23192393278093
-          },
-          icon: './img/my.png',
-          range: []
-        }
+        // {
+        //   title: "我测试",
+        //   location: {
+        //     lng: 121.34607502288814,
+        //     lat: 31.23192393278093
+        //   },
+        //   icon: './img/my.png',
+        //   range: []
+        // }
       ],
       allList: [],
       center: {
@@ -192,7 +207,7 @@ export default {
                 lng: attr.longitude,
                 lat: attr.latitude
               },
-              icon: './img/home.png',
+              icon: "./img/home.png"
             });
             gpsPoint.push(new window.BMap.Point(attr.longitude, attr.latitude));
             this.center = {
@@ -204,7 +219,7 @@ export default {
           const deviceList = [];
           obj.deviceList.forEach(ele => {
             const attr = ele.entity.attributes;
-            let picture = this.getTextImage(ele.title)
+            let picture = this.getTextImage(ele.title);
             deviceList.push({
               title: ele.title,
               location: {
@@ -266,9 +281,6 @@ export default {
               this.$toast.error("坐标转换出现异常！");
             }
           });
-
-
-
         })
         .catch(ex => {
           this.$toast.error(ex.message);
@@ -276,7 +288,8 @@ export default {
     },
     //获取图片
     getTextImage(str) {
-      if (!str) return "https://www.home-assistant.io/images/favicon-192x192.png"
+      if (!str)
+        return "https://www.home-assistant.io/images/favicon-192x192.png";
       var canvas = document.createElement("canvas");
       canvas.width = 50;
       canvas.height = 50;
@@ -299,7 +312,7 @@ export default {
         const gpsPoint = [];
         obj.deviceList.forEach(ele => {
           const attr = ele.entity.attributes;
-          let picture = this.getTextImage(ele.title)
+          let picture = this.getTextImage(ele.title);
           deviceList.push({
             title: ele.title,
             location: {
@@ -359,76 +372,79 @@ export default {
     },
     gpsloggerClick() {
       this.open = false;
-      this.registeredComponent('GPSLogger').then(() => {
+      this.registeredComponent("GPSLogger").then(() => {
         this.$toast.success("配置成功，点击右下角持续定位");
-      })
+      });
     },
     logInfoClick() {
       this.open = false;
-      this.$refs['LogInfo'].show()
-    },
-    homeClick() {
-      top.location.href = '/'
+      this.$refs["LogInfo"].show();
     },
     //持续定位
     async timerLocation({ latitude, longitude, accuracy, speed, altitude }) {
       if (this.isSendLocation) return;
-      this.isSendLocation = true
+      this.isSendLocation = true;
       //获取电池信息
-      let battery = 100
+      let battery = 100;
       try {
-        let b = await navigator.getBattery().catch(() => { })
-        battery = b.level * 100
-      } catch{
-
-      }
+        let b = await navigator.getBattery().catch(() => {});
+        battery = b.level * 100;
+      } catch {}
 
       try {
-        let obj = JSON.parse(localStorage['map-gpslogger'])
+        let obj = JSON.parse(localStorage["map-gpslogger"]);
         fetch(obj.webhook, {
-          method: 'post',
+          method: "post",
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            "Content-Type": "application/x-www-form-urlencoded"
           },
-          body: `latitude=${latitude}&longitude=${longitude}&device=${obj.device}&accuracy=${accuracy || ''
-            }&battery=${battery}&speed=${speed || ''
-            }&direction=0&altitude=0&provider=0&activity=0`,
-          mode: 'no-cors',
-        }).then(res => res.text()).then(res => {
-          this.$refs['LogInfo'].add(`经度：${longitude} \n 纬度：${latitude}`)
-        }).catch(ex => {
-          this.$toast.error(`定位信息发送错误`);
-        }).finally(() => {
-          //5秒重新发送
-          setTimeout(() => {
-            this.isSendLocation = false
-          }, 5000)
+          body: `latitude=${latitude}&longitude=${longitude}&device=${
+            obj.device
+          }&accuracy=${accuracy || ""}&battery=${battery}&speed=${speed ||
+            ""}&direction=0&altitude=0&provider=0&activity=0`,
+          mode: "no-cors"
         })
-      } catch{
-
-      }
+          .then(res => res.text())
+          .then(res => {
+            this.$refs["LogInfo"].add(
+              `经度：${longitude} \n 纬度：${latitude}`
+            );
+          })
+          .catch(ex => {
+            this.$toast.error(`定位信息发送错误`);
+          })
+          .finally(() => {
+            //5秒重新发送
+            setTimeout(() => {
+              this.isSendLocation = false;
+            }, 5000);
+          });
+      } catch {}
     },
     locationSuccess({ point, AddressComponent, marker }) {
       if (this.isStartLocation) return;
       this.isStartLocation = true;
       window.noSleep.enable();
-      console.log(point)
+      console.log(point);
       this.$toast.success("开启持续定位中...打开日志查看");
       //开始定位（监听位置）
-      navigator.geolocation.watchPosition(({ coords }) => {
-        this.timerLocation(coords)
-      }, (err) => {
-        this.$refs['LogInfo'].add(`定位错误：${err.code}`)
-      }, {
+      navigator.geolocation.watchPosition(
+        ({ coords }) => {
+          this.timerLocation(coords);
+        },
+        err => {
+          this.$refs["LogInfo"].add(`定位错误：${err.code}`);
+        },
+        {
           enableHighAccuracy: true,
           maximumAge: 60000,
           timeout: 15000
-        })
+        }
+      );
     },
     locationError({ StatusCode }) {
       this.$toast.error(`定位失败，错误码：${StatusCode}`);
     }
-
   }
 };
 </script>
