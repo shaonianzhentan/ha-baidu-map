@@ -70,7 +70,7 @@ class HassGateView(HomeAssistantView):
     url = '/' + DOMAIN
     name = DOMAIN
     extra_urls = extra_urls
-    requires_auth = True
+    requires_auth = False
 
     async def get(self, request):
         # _LOGGER.info(request.rel_url.raw_path)
@@ -82,8 +82,8 @@ class HassGateView(HomeAssistantView):
         return self.json(response)
 
 
-# 安装平台
-def setup_platform(hass, config, add_entities, discovery_info=None):
+# 安装
+def setup(hass, config):
     _LOGGER.info('''
 -------------------------------------------------------------------
     ha-baidu-map百度地图插件【作者QQ：635147515】
